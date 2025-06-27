@@ -1,0 +1,125 @@
+version: "3.8"
+
+networks:
+  network-desafio:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  kafka_data:
+  redpanda_data:
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: postgres-db
+    platform: linux/amd64
+    restart: always
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - network-desafio
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  kafka:
+    container_name: kafka
+    platform: linux/amd64
+    image: obsidiandynamics/kafka
+    restart: "no"
+    ports:
+      - "2181:2181"
+      - "9092:9092"
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+    networks:
+      - network-desafio
+    environment:
+      KAFKA_LISTENERS: "INTERNAL://:29092,EXTERNAL://:9092"
+      KAFKA_ADVERTISED_LISTENERS: "INTERNAL://kafka:29092,EXTERNAL://localhost:9092"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT"
+      KAFKA_INTER_BROKER_LISTENER_NAME: "INTERNAL"
+      KAFKA_ZOOKEEPER_SESSION_TIMEOUT: "6000"
+      KAFKA_RESTART_ATTEMPTS: "10"
+      KAFKA_RESTART_DELAY: "5"
+      ZOOKEEPER_AUTOPURGE_PURGE_INTERVAL: "0"
+
+
+  redpanda-console:
+    platform: linux/amd64
+    container_name: redpanda-console
+    image: docker.redpanda.com/redpandadata/console:v2.3.8
+    restart: on-failure
+    entrypoint: /bin/sh
+    command: -c "echo \"$$CONSOLE_CONFIG_FILE\" > /tmp/config.yml; /app/console"
+    ports:
+      - "8081:8080"
+    volumes:
+      - redpanda_data:/var/lib/redpanda/data
+    networks:
+      - network-desafio
+    environment:
+      CONFIG_FILEPATH: /tmp/config.yml
+      CONSOLE_CONFIG_FILE: |
+        kafka:
+          brokers: ["kafka:29092"]
+    depends_on:
+      kafka:
+        condition: service_started
+
+  api:
+    build: api-creditos-fiscais
+    container_name: api-creditos-fiscais
+    platform: linux/amd64
+    networks:
+      - network-desafio
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SERVER_PORT: 8050
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/postgres
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      LOGGING_LEVEL_ROOT: INFO
+      LOGGING_LEVEL_COM_DESAFIO: DEBUG
+      SPRING_FLYWAY_ENABLED: "true"
+      SPRING_FLYWAY_LOCATIONS: classpath:db/migration
+      SPRING_JPA_SHOW_SQL: "true"
+      SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL: "true"
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      SPRING_KAFKA_TOPIC_CREDITO_CONSULTA: credito-consulta
+      SPRING_KAFKA_TOPIC_CREDITO_RESPOSTA: credito-resposta
+      SPRING_KAFKA_TOPIC_CREDITO_EVENTOS: credito-eventos
+      SPRING_KAFKA_TOPIC_CREDITO_AUDIT: credito-audit
+      SPRING_KAFKA_CONSUMER_GROUP_ID: creditos-fiscais-group
+    ports:
+      - "8050:8050"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8050/api/creditos/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 120s
+
+  frontend:
+    build: front-creditos-fiscais
+    platform: linux/amd64
+    container_name: frontend-creditos-fiscais
+    networks:
+      - network-desafio
+    ports:
+      - "8080:80"
+    restart: unless-stopped
