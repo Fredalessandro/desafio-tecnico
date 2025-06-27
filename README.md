@@ -119,4 +119,4 @@ docker-compose down
 
 ---
 
-**Dúvidas?** Abra uma issue ou envie um e-mail para o responsável pelo repositório.
+**Dúvidas?** Abra uma issue ou envie um e-mail para o responsável pelo repositório..
