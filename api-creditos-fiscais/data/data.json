@@ -1,0 +1,38 @@
+[
+  {
+    "numeroCredito": "123456",
+    "numeroNfse": "7891011",
+    "dataConstituicao": "2024-02-25",
+    "valorIssqn": 1500.75,
+    "tipoCredito": "ISSQN",
+    "simplesNacional": true,
+    "aliquota": 5,
+    "valorFaturado": 30000,
+    "valorDeducao": 5000,
+    "baseCalculo": 25000
+  },
+  {
+    "numeroCredito": "789012",
+    "numeroNfse": "7891011",
+    "dataConstituicao": "2024-02-26",
+    "valorIssqn": 1200.5,
+    "tipoCredito": "ISSQN",
+    "simplesNacional": false,
+    "aliquota": 4.5,
+    "valorFaturado": 25000,
+    "valorDeducao": 4000,
+    "baseCalculo": 21000
+  },
+  {
+    "numeroCredito": "654321",
+    "numeroNfse": "1122334",
+    "dataConstituicao": "2024-01-15",
+    "valorIssqn": 800.5,
+    "tipoCredito": "Outros",
+    "simplesNacional": true,
+    "aliquota": 3.5,
+    "valorFaturado": 20000,
+    "valorDeducao": 3000,
+    "baseCalculo": 17000
+  }
+]
