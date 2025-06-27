@@ -134,7 +134,7 @@ mvn clean package
 java -jar target/javaweb-0.0.1-SNAPSHOT.jar
 ```
 
-A aplicação estará disponível em: `http://localhost:8080`
+A aplicação estará disponível em: `http://localhost:8050`
 
 ## 📚 Documentação da API
 
