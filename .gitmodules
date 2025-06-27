@@ -1,0 +1,3 @@
+[submodule "front-creditos-fiscais"]
+	path = front-creditos-fiscais
+	url = https://github.com/Fredalessandro/front-creditos-fiscais.git
