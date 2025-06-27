@@ -4,6 +4,29 @@
 
 Este projeto orquestra uma API Java Spring Boot, um frontend Angular, PostgreSQL, Kafka e Redpanda Console usando Docker Compose. Compatível com Windows, Linux e macOS (incluindo Apple Silicon/M1/M2).
 
+**Importante:** Este repositório contém submódulos Git que referenciam outros repositórios separados:
+
+- `api-creditos-fiscais/` - Submódulo do repositório da API Java Spring Boot
+- `front-creditos-fiscais/` - Submódulo do repositório do frontend Angular
+
+## 🔗 Repositórios dos Submódulos
+
+Este projeto utiliza submódulos Git para organizar os diferentes componentes. Cada submódulo tem seu próprio repositório:
+
+### Backend (API)
+
+- **Repositório:** [api-creditos-fiscais](https://github.com/Fredalessandro/api-creditos-fiscais)
+- **Tecnologia:** Java 17 + Spring Boot
+- **Diretório local:** `api-creditos-fiscais/`
+
+### Frontend
+
+- **Repositório:** [front-creditos-fiscais](https://github.com/Fredalessandro/front-creditos-fiscais)
+- **Tecnologia:** Angular + Node.js
+- **Diretório local:** `front-creditos-fiscais/`
+
+> **💡 Dica:** Para contribuir com melhorias específicas de cada componente, acesse diretamente os repositórios individuais dos submódulos.
+
 ---
 
 ## 🐳 Subindo o ambiente com Docker Compose
@@ -19,9 +42,17 @@ Este projeto orquestra uma API Java Spring Boot, um frontend Angular, PostgreSQL
 
 ### Clonando o repositório
 
+**⚠️ IMPORTANTE:** Como este projeto contém submódulos Git, você deve usar o comando com `--recurse-submodules` para baixar todos os submódulos automaticamente:
+
 ```sh
-git clone https://github.com/Fredalessandro/desafio-tecnico.git
-cd desafio-tecnico
+git clone --recurse-submodules https://github.com/Fredalessandro/desafio-tecnico-alessandro.git
+cd desafio-tecnico-alessandro
+```
+
+**Alternativa:** Se você já clonou sem submódulos, pode baixá-los depois com:
+
+```sh
+git submodule update --init --recursive
 ```
 
 ### Subindo os containers
@@ -104,7 +135,8 @@ docker-compose down
 
 ## 🛠️ Informações do Git
 
-- Clone: `git clone https://github.com/Fredalessandro/desafio-tecnico-alessandro.git`
+- Clone: `git clone --recurse-submodules https://github.com/Fredalessandro/desafio-tecnico-alessandro.git`
+- **Submódulos:** Este projeto contém submódulos que referenciam repositórios separados para API e Frontend
 - Recomenda-se criar branches para novas features/fixes.
 - Faça commits frequentes e mensagens claras.
 - Para contribuir, abra um Pull Request.
@@ -119,4 +151,4 @@ docker-compose down
 
 ---
 
-**Dúvidas?** Abra uma issue ou envie um e-mail para o responsável pelo repositório..
+**Dúvidas?** Abra uma issue ou envie um e-mail para o responsável pelo repositório.
