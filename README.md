@@ -104,7 +104,7 @@ docker-compose down
 
 ## 🛠️ Informações do Git
 
-- Clone: `git clone https://github.com/Fredalessandro/desafio-tecnico.git`
+- Clone: `git clone https://github.com/Fredalessandro/desafio-tecnico-alessandro.git`
 - Recomenda-se criar branches para novas features/fixes.
 - Faça commits frequentes e mensagens claras.
 - Para contribuir, abra um Pull Request.
