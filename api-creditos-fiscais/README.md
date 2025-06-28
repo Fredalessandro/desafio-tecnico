@@ -1,551 +1,354 @@
-# API de Créditos Fiscais
+# 🚀 API de Créditos Fiscais
 
-[![Java](https://img.shields.io/badge/Java-17-orange.svg)](https://openjdk.java.net/projects/jdk/17/)
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3.12-brightgreen.svg)](https://spring.io/projects/spring-boot)
-[![Maven](https://img.shields.io/badge/Maven-3.11.0-blue.svg)](https://maven.apache.org/)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-13+-blue.svg)](https://www.postgresql.org/)
-[![Flyway](https://img.shields.io/badge/Flyway-9.22.3-yellow.svg)](https://flywaydb.org/)
-[![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://www.docker.com/)
+API REST para gestão de créditos fiscais desenvolvida em Spring Boot com autenticação JWT e auditoria via Kafka.
 
-## 📋 Descrição
+## 📋 Índice
 
-API REST desenvolvida em Spring Boot para consulta de créditos fiscais. O sistema permite consultar créditos constituídos associados a Notas Fiscais de Serviço Eletrônica (NFS-e) e fornece funcionalidades para busca e validação de dados fiscais, além de autenticação JWT e gerenciamento de usuários.
+- [Visão Geral](#visão-geral)
+- [Tecnologias](#tecnologias)
+- [Estrutura](#estrutura)
+- [Instalação](#instalação)
+- [Configuração](#configuração)
+- [API](#api)
+- [Testes](#testes)
+- [Deploy](#deploy)
 
-## 🚀 Tecnologias Utilizadas
+## 🎯 Visão Geral
 
-- **Java 17** - Linguagem de programação
-- **Spring Boot 3.3.12** - Framework para desenvolvimento de aplicações Java
-- **Spring Data JPA** - Persistência de dados
-- **Spring Security** - Segurança e autenticação
-- **PostgreSQL** - Banco de dados relacional
-- **Flyway** - Migração de banco de dados
-- **MapStruct** - Mapeamento entre objetos
-- **Lombok** - Redução de código boilerplate
-- **Maven** - Gerenciamento de dependências
-- **Kafka** - Mensageria e eventos
-- **JWT** - Autenticação baseada em tokens
-- **OpenAPI/Swagger** - Documentação da API
+API desenvolvida para gerenciar créditos fiscais, permitindo consultas por NFS-e e número do crédito. Inclui autenticação JWT, auditoria via Kafka e documentação OpenAPI.
 
-## 🌐 Informações de Acesso
+### Funcionalidades
 
-### Portas e URLs
+- ✅ Consulta de créditos por NFS-e
+- ✅ Consulta de crédito por número
+- ✅ Autenticação JWT
+- ✅ Cadastro e gestão de usuários
+- ✅ Auditoria via Kafka
+- ✅ Documentação OpenAPI/Swagger
+- ✅ Migrações automáticas com Flyway
+- ✅ Health checks
 
-| Serviço           | Porta | URL                                       | Descrição               |
-| ----------------- | ----- | ----------------------------------------- | ----------------------- |
-| **API Principal** | 8050  | http://localhost:8050                     | API REST principal      |
-| **Health Check**  | 8050  | http://localhost:8050/api/creditos/status | Status da aplicação     |
-| **Swagger UI**    | 8050  | http://localhost:8050/swagger-ui.html     | Documentação interativa |
-| **PostgreSQL**    | 5432  | localhost:5432                            | Banco de dados          |
-| **Kafka**         | 9092  | localhost:9092                            | Broker de mensagens     |
+## 🛠 Tecnologias
 
-### Credenciais Padrão
+- **Java 17**
+- **Spring Boot 3.3.12**
+- **Spring Security + JWT**
+- **Spring Data JPA**
+- **PostgreSQL 16**
+- **Flyway** (Migrações)
+- **Kafka** (Eventos)
+- **MapStruct** (Mapeamento)
+- **Lombok**
+- **Maven**
+- **SpringDoc OpenAPI**
 
-- **PostgreSQL**: `postgres` / `postgres`
-- **API**: Sem autenticação para endpoints públicos
-- **JWT**: Necessário para endpoints protegidos
-
-## 📁 Estrutura do Projeto
+## 📁 Estrutura
 
 ```
-src/
-├── main/
-│   ├── java/com/desafio/credito/
-│   │   ├── controller/          # Controladores REST
-│   │   │   ├── CreditoController.java
-│   │   │   └── UsuarioController.java
-│   │   ├── service/             # Lógica de negócio
-│   │   │   ├── CreditoService.java
-│   │   │   ├── UsuarioService.java
-│   │   │   └── CreditoEventPublisher.java
-│   │   ├── repository/          # Acesso a dados
-│   │   │   ├── CreditoRepository.java
-│   │   │   └── UsuarioRepository.java
-│   │   ├── entity/              # Entidades JPA
-│   │   │   ├── Credito.java
-│   │   │   └── Usuario.java
-│   │   ├── dto/                 # Objetos de transferência
-│   │   │   ├── CreditoDTO.java
-│   │   │   ├── UsuarioDTO.java
-│   │   │   ├── LoginRequestDTO.java
-│   │   │   └── LoginResponseDTO.java
-│   │   ├── mapper/              # Mapeadores MapStruct
-│   │   │   ├── CreditoMapper.java
-│   │   │   └── UsuarioMapper.java
-│   │   ├── config/              # Configurações
-│   │   │   ├── SecurityConfig.java
-│   │   │   ├── JwtUtil.java
-│   │   │   ├── OpenApiConfig.java
-│   │   │   └── KafkaTopicConfig.java
-│   │   ├── exception/           # Tratamento de exceções
-│   │   │   ├── GlobalExceptionHandler.java
-│   │   │   ├── ErrorResponse.java
-│   │   │   └── ResourceNotFoundException.java
-│   │   ├── event/               # Eventos Kafka
-│   │   │   ├── CreditoConsultaEvent.java
-│   │   │   ├── EnumStatusConsulta.java
-│   │   │   └── EnunTipoConsulta.java
-│   │   └── JavawebApplication.java
-│   └── resources/
-│       ├── application.yml      # Configurações da aplicação
-│       └── db/migration/        # Scripts de migração Flyway
-├── README.md                    # Documentação principal
-├── GIT_SETUP.md                 # Guia de primeira publicação no Git
-├── setup.sh                     # Script de setup (Linux/macOS)
-├── setup.bat                    # Script de setup (Windows)
-├── env.example                  # Exemplo de variáveis de ambiente
-├── Dockerfile                   # Configuração Docker
-└── pom.xml                      # Configuração do Maven
+src/main/java/com/desafio/credito/
+├── config/                 # Configurações
+│   ├── JwtUtil.java       # Utilitário JWT
+│   ├── SecurityConfig.java # Configuração de segurança
+│   ├── OpenApiConfig.java # Configuração OpenAPI
+│   └── KafkaTopicConfig.java # Configuração Kafka
+├── controller/            # Controllers REST
+│   ├── CreditoController.java
+│   └── UsuarioController.java
+├── dto/                  # Data Transfer Objects
+│   ├── CreditoDTO.java
+│   ├── UsuarioDTO.java
+│   ├── LoginRequestDTO.java
+│   └── LoginResponseDTO.java
+├── entity/               # Entidades JPA
+│   ├── Credito.java
+│   └── Usuario.java
+├── mapper/               # Mapeamentos MapStruct
+│   ├── CreditoMapper.java
+│   └── UsuarioMapper.java
+├── repository/           # Repositórios JPA
+│   ├── CreditoRepository.java
+│   └── UsuarioRepository.java
+├── service/              # Lógica de negócio
+│   ├── CreditoService.java
+│   ├── UsuarioService.java
+│   └── CreditoEventPublisher.java
+├── exception/            # Tratamento de exceções
+│   ├── GlobalExceptionHandler.java
+│   ├── ResourceNotFoundException.java
+│   └── ErrorResponse.java
+└── event/                # Eventos Kafka
+    ├── CreditoConsultaEvent.java
+    ├── EnumStatusConsulta.java
+    └── EnunTipoConsulta.java
 ```
 
-## 🛠️ Pré-requisitos
+## 🚀 Instalação
 
-- **Java 17** ou superior
-- **Maven 3.6+**
-- **PostgreSQL 13+**
-- **Git**
-- **Docker** (opcional, para execução em container)
+### Pré-requisitos
 
-## ⚙️ Configuração do Ambiente
+- Java 17+
+- Maven 3.8+
+- PostgreSQL 16+
+- Kafka (opcional para desenvolvimento local)
 
-### 🚀 Setup Automático (Recomendado)
+### Execução Local
 
-#### Linux/macOS:
+1. **Clone o repositório**
+
+   ```bash
+   git clone <repository-url>
+   cd api-creditos-fiscais
+   ```
+
+2. **Configure o banco de dados**
+
+   ```bash
+   # Copie o arquivo de exemplo
+   cp env.example .env
+
+   # Edite as variáveis de ambiente
+   nano .env
+   ```
+
+3. **Execute a aplicação**
+
+   ```bash
+   # Com Maven Wrapper
+   ./mvnw spring-boot:run
+
+   # Ou com Maven
+   mvn spring-boot:run
+   ```
+
+### Docker
 
 ```bash
-# Tornar o script executável (se necessário)
-chmod +x setup.sh
+# Build da imagem
+docker build -t api-creditos-fiscais .
 
-# Executar o setup
-./setup.sh
+# Execução
+docker run -p 8050:8050 api-creditos-fiscais
 ```
 
-#### Windows:
+## ⚙️ Configuração
 
-```cmd
-# Executar o script de setup
-setup.bat
+### Variáveis de Ambiente
+
+| Variável                         | Descrição          | Padrão                                      |
+| -------------------------------- | ------------------ | ------------------------------------------- |
+| `SPRING_PROFILES_ACTIVE`         | Perfil ativo       | `dev`                                       |
+| `SERVER_PORT`                    | Porta da aplicação | `8050`                                      |
+| `SPRING_DATASOURCE_URL`          | URL do banco       | `jdbc:postgresql://localhost:5432/postgres` |
+| `SPRING_DATASOURCE_USERNAME`     | Usuário do banco   | `postgres`                                  |
+| `SPRING_DATASOURCE_PASSWORD`     | Senha do banco     | `postgres`                                  |
+| `SPRING_KAFKA_BOOTSTRAP_SERVERS` | Servidores Kafka   | `localhost:9092`                            |
+
+### Perfis
+
+- **dev**: Desenvolvimento local
+- **test**: Testes
+- **prod**: Produção
+
+## 🔌 API
+
+### Base URL
+
+```
+http://localhost:8050/api
 ```
 
-### 🔧 Setup Manual
+### Endpoints
 
-#### 1. Clone o repositório
-
-```bash
-git clone <url-do-repositorio>
-cd api-creditos-fiscais
-```
-
-#### 2. Configuração do Banco de Dados
-
-Crie um banco de dados PostgreSQL:
-
-```sql
-CREATE DATABASE postgres;
-```
-
-#### 3. Configuração das Variáveis de Ambiente
-
-Copie o arquivo de exemplo e configure suas variáveis:
-
-```bash
-# Linux/macOS
-cp env.example .env
-
-# Windows
-copy env.example .env
-```
-
-Edite o arquivo `.env` com suas configurações:
-
-```bash
-# Configurações do Banco de Dados
-DATASOURCE_URL=jdbc:postgresql://localhost:5432/postgres
-DATASOURCE_USERNAME=postgres
-DATASOURCE_PASSWORD=postgres
-
-# Porta da aplicação
-SERVER_PORT=8050
-
-# Configurações de Log
-LOGGING_LEVEL_ROOT=INFO
-LOGGING_LEVEL_COM_DESAFIO=DEBUG
-```
-
-#### 4. Executando a Aplicação
-
-##### Opção 1: Usando Maven Wrapper
-
-```bash
-./mvnw spring-boot:run
-```
-
-##### Opção 2: Usando Maven
-
-```bash
-mvn clean install
-mvn spring-boot:run
-```
-
-##### Opção 3: Executando o JAR
-
-```bash
-mvn clean package
-java -jar target/javaweb-0.0.1-SNAPSHOT.jar
-```
-
-A aplicação estará disponível em: `http://localhost:8050`
-
-## 📚 Documentação da API
-
-### Endpoints Disponíveis
-
-#### 🔐 Autenticação
-
-##### Login
+#### Autenticação
 
 ```http
 POST /usuarios/login
 Content-Type: application/json
 
 {
-  "login": "joaosilva",
-  "senha": "123456"
+  "login": "usuario",
+  "senha": "senha123"
 }
 ```
 
-**Resposta de Sucesso (200):**
-
-```json
-{
-  "nome": "João da Silva",
-  "login": "joaosilva",
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6..."
-}
-```
-
-#### 👥 Usuários
-
-##### Cadastrar Usuário
+#### Usuários
 
 ```http
-POST /usuarios
-Content-Type: application/json
-
-{
-  "nome": "João da Silva",
-  "login": "joaosilva",
-  "senha": "123456"
-}
+POST /usuarios                    # Cadastrar usuário
+GET /usuarios                     # Listar usuários
+GET /usuarios/{id}                # Buscar usuário por ID
+DELETE /usuarios/{id}             # Deletar usuário
 ```
 
-##### Listar Usuários
+#### Créditos
 
 ```http
-GET /usuarios
-Authorization: Bearer <token>
+GET /creditos/{numeroNfse}        # Buscar créditos por NFS-e
+GET /creditos/credito/{numeroCredito} # Buscar crédito por número
+GET /creditos/health              # Health check
+GET /creditos/status              # Status da API
 ```
 
-##### Buscar Usuário por ID
+### Documentação
 
-```http
-GET /usuarios/{id}
-Authorization: Bearer <token>
-```
-
-##### Deletar Usuário
-
-```http
-DELETE /usuarios/{id}
-Authorization: Bearer <token>
-```
-
-#### 💰 Créditos Fiscais
-
-##### Buscar Créditos por NFS-e
-
-```http
-GET /api/creditos/{numeroNfse}
-```
-
-**Parâmetros:**
-
-- `numeroNfse` (path): Número da Nota Fiscal de Serviço Eletrônica
-
-**Resposta de Sucesso (200):**
-
-```json
-[
-  {
-    "numeroCredito": "123456",
-    "numeroNfse": "7891011",
-    "dataConstituicao": "2024-02-25",
-    "valorIssqn": 1500.75,
-    "tipoCredito": "ISSQN",
-    "simplesNacional": true,
-    "aliquota": 5.0,
-    "valorFaturado": 30000.0,
-    "valorDeducao": 5000.0,
-    "baseCalculo": 25000.0
-  }
-]
-```
-
-##### Buscar Crédito por Número
-
-```http
-GET /api/creditos/credito/{numeroCredito}
-```
-
-**Parâmetros:**
-
-- `numeroCredito` (path): Número único do crédito
-
-**Resposta de Sucesso (200):**
-
-```json
-{
-  "numeroCredito": "123456",
-  "numeroNfse": "7891011",
-  "dataConstituicao": "2024-02-25",
-  "valorIssqn": 1500.75,
-  "tipoCredito": "ISSQN",
-  "simplesNacional": true,
-  "aliquota": 5.0,
-  "valorFaturado": 30000.0,
-  "valorDeducao": 5000.0,
-  "baseCalculo": 25000.0
-}
-```
-
-##### Health Check
-
-```http
-GET /api/creditos/status
-```
-
-**Resposta de Sucesso (200):**
-
-```
-API de Créditos funcionando!
-```
-
-### Códigos de Erro
-
-- **400 Bad Request**: Parâmetros inválidos ou em branco
-- **401 Unauthorized**: Token JWT inválido ou ausente
-- **404 Not Found**: Crédito, NFS-e ou usuário não encontrado
-- **409 Conflict**: Login já está em uso
-- **500 Internal Server Error**: Erro interno do servidor
-
-## 🗄️ Estrutura do Banco de Dados
-
-### Tabela: `credito`
-
-| Campo               | Tipo          | Descrição                        |
-| ------------------- | ------------- | -------------------------------- |
-| `id`                | BIGINT        | Chave primária (auto-incremento) |
-| `numero_credito`    | VARCHAR(50)   | Número único do crédito          |
-| `numero_nfse`       | VARCHAR(50)   | Número da NFS-e                  |
-| `data_constituicao` | DATE          | Data de constituição do crédito  |
-| `valor_issqn`       | DECIMAL(15,2) | Valor do ISSQN                   |
-| `tipo_credito`      | VARCHAR(50)   | Tipo do crédito (ISSQN, Outros)  |
-| `simples_nacional`  | BOOLEAN       | Indica se é Simples Nacional     |
-| `aliquota`          | DECIMAL(5,2)  | Alíquota aplicada                |
-| `valor_faturado`    | DECIMAL(15,2) | Valor total faturado             |
-| `valor_deducao`     | DECIMAL(15,2) | Valor das deduções               |
-| `base_calculo`      | DECIMAL(15,2) | Base de cálculo                  |
-
-### Tabela: `usuario`
-
-| Campo   | Tipo         | Descrição                        |
-| ------- | ------------ | -------------------------------- |
-| `id`    | BIGINT       | Chave primária (auto-incremento) |
-| `nome`  | VARCHAR(100) | Nome completo do usuário         |
-| `login` | VARCHAR(50)  | Login único do usuário           |
-| `senha` | VARCHAR(255) | Senha criptografada              |
+- **Swagger UI**: http://localhost:8050/api/swagger-ui.html
+- **OpenAPI JSON**: http://localhost:8050/api/v3/api-docs
 
 ## 🧪 Testes
 
-### Executando os Testes
+### Executar Testes
 
 ```bash
-# Executar todos os testes
-mvn test
+# Todos os testes
+./mvnw test
 
-# Executar testes com relatório de cobertura
-mvn clean test jacoco:report
+# Testes específicos
+./mvnw test -Dtest=CreditoControllerTest
 
-# Executar testes de integração
-mvn test -Dtest=*IT
+# Testes de integração
+./mvnw test -Dtest=*IT
 ```
 
-## 🔧 Desenvolvimento
-
-### Comandos Úteis
+### Cobertura
 
 ```bash
-# Compilar o projeto
-mvn clean compile
-
-# Executar em modo desenvolvimento com hot reload
-mvn spring-boot:run
-
-# Gerar JAR executável
-mvn clean package
-
-# Executar migrações do banco
-mvn flyway:migrate
-
-# Limpar e resetar banco de dados
-mvn flyway:clean flyway:migrate
-
-# Gerar documentação OpenAPI
-mvn spring-boot:run
-# Acesse: http://localhost:8050/swagger-ui.html
+# Gerar relatório de cobertura
+./mvnw jacoco:report
 ```
 
-### Configurações de Desenvolvimento
-
-A aplicação está configurada com:
-
-- **Hot Reload**: Ativado via Spring Boot DevTools
-- **SQL Logging**: Ativado para debug
-- **Flyway**: Migrações automáticas habilitadas
-- **Swagger UI**: Documentação interativa disponível
-
-## 🐳 Docker
-
-### Build da Imagem
-
-```bash
-docker build -t api-creditos-fiscais .
-```
-
-### Executar Container
-
-```bash
-docker run -p 8050:8050 \
-  -e DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/postgres \
-  -e DATASOURCE_USERNAME=postgres \
-  -e DATASOURCE_PASSWORD=postgres \
-  api-creditos-fiscais
-```
+## 🐳 Deploy
 
 ### Docker Compose
 
 ```yaml
-version: "3.8"
-services:
-  api:
-    build: .
-    ports:
-      - "8050:8050"
-    environment:
-      - DATASOURCE_URL=jdbc:postgresql://postgres:5432/postgres
-      - DATASOURCE_USERNAME=postgres
-      - DATASOURCE_PASSWORD=postgres
-    depends_on:
-      - postgres
-      - kafka
-
-  postgres:
-    image: postgres:16
-    environment:
-      POSTGRES_DB: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
-  kafka:
-    image: obsidiandynamics/kafka
-    ports:
-      - "9092:9092"
-      - "2181:2181"
-    environment:
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
-      KAFKA_ZOOKEEPER_CONNECT: localhost:2181
-
-volumes:
-  postgres_data:
+api:
+  build: .
+  ports:
+    - "8050:8050"
+  environment:
+    SPRING_PROFILES_ACTIVE: prod
+    SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/postgres
+  depends_on:
+    postgres:
+      condition: service_healthy
 ```
 
-## 📦 Deploy
+### Kubernetes
 
-### Variáveis de Ambiente para Produção
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-creditos-fiscais
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: api-creditos-fiscais
+  template:
+    metadata:
+      labels:
+        app: api-creditos-fiscais
+    spec:
+      containers:
+        - name: api
+          image: api-creditos-fiscais:latest
+          ports:
+            - containerPort: 8050
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "prod"
+```
+
+## 🔧 Comandos Úteis
+
+### Desenvolvimento
 
 ```bash
-# Configurações de Produção
-SPRING_PROFILES_ACTIVE=prod
-SERVER_PORT=8050
-DATASOURCE_URL=jdbc:postgresql://prod-db:5432/creditos
-DATASOURCE_USERNAME=prod_user
-DATASOURCE_PASSWORD=prod_password
-LOGGING_LEVEL_ROOT=WARN
-SPRING_JPA_SHOW_SQL=false
+# Compilar
+./mvnw compile
+
+# Executar com hot reload
+./mvnw spring-boot:run
+
+# Gerar JAR
+./mvnw clean package
+
+# Limpar
+./mvnw clean
 ```
 
-### Build para Produção
+### Banco de Dados
 
 ```bash
-mvn clean package -Pprod
-java -jar target/javaweb-0.0.1-SNAPSHOT.jar
+# Executar migrações
+./mvnw flyway:migrate
+
+# Limpar banco
+./mvnw flyway:clean
+
+# Validar migrações
+./mvnw flyway:validate
 ```
 
-## 🚀 Primeira Publicação no Git
+## 🐛 Troubleshooting
 
-Para fazer a primeira publicação no Git, consulte o arquivo [GIT_SETUP.md](GIT_SETUP.md) que contém instruções detalhadas sobre:
+### Problemas Comuns
 
-- Configuração inicial do Git
-- Preparação para o primeiro commit
-- Configuração do repositório remoto
-- Primeira publicação
-- Convenções de commit
-- Boas práticas
-- Solução de problemas comuns
+1. **Erro de conexão com banco**
 
-## 🔍 Monitoramento e Logs
+   ```bash
+   # Verifique se o PostgreSQL está rodando
+   pg_isready -h localhost -p 5432
 
-### Health Check
+   # Verifique as credenciais
+   psql -h localhost -U postgres -d postgres
+   ```
 
-```bash
-curl http://localhost:8050/api/creditos/status
-```
+2. **Erro de migração Flyway**
 
-### Logs da Aplicação
+   ```bash
+   # Verifique o histórico
+   ./mvnw flyway:info
 
-```bash
-# Ver logs em tempo real
-tail -f logs/application.log
+   # Repare migrações
+   ./mvnw flyway:repair
+   ```
 
-# Filtrar logs de erro
-grep "ERROR" logs/application.log
-```
+3. **Erro de compilação**
 
-### Métricas (se configurado)
+   ```bash
+   # Limpe e recompile
+   ./mvnw clean compile
 
-```bash
-curl http://localhost:8050/actuator/health
-curl http://localhost:8050/actuator/metrics
-```
+   # Verifique versão do Java
+   java -version
+   ```
 
-## 🙏 Agradecimentos
+## 📊 Monitoramento
 
-- Spring Boot Team
-- PostgreSQL Community
-- Flyway Team
-- Apache Kafka Community
+### Health Checks
 
-## 📞 Suporte
+- **Health**: `/api/creditos/health`
+- **Status**: `/api/creditos/status`
 
-Para suporte, envie um email para suporte@empresa.com ou abra uma issue no repositório.
+### Métricas
+
+- **Actuator**: `/actuator` (se configurado)
+- **Prometheus**: `/actuator/prometheus` (se configurado)
+
+## 🤝 Contribuição
+
+1. Fork o projeto
+2. Crie uma branch (`git checkout -b feature/nova-funcionalidade`)
+3. Commit suas mudanças (`git commit -m 'Adiciona nova funcionalidade'`)
+4. Push para a branch (`git push origin feature/nova-funcionalidade`)
+5. Abra um Pull Request
+
+## 📄 Licença
+
+Este projeto está sob a licença MIT.
 
 ---
 
-**Versão:** 0.0.1-SNAPSHOT  
-**Última atualização:** Dezembro 2024  
-**Porta padrão:** 8050  
-**Java:** 17  
-**Spring Boot:** 3.3.12
+**Desenvolvido com ❤️ por [Seu Nome]**

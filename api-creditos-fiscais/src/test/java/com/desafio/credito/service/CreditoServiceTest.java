@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -74,7 +73,7 @@ class CreditoServiceTest {
   }
 
   @Test
-  void buscarCreditosPorNfse_deveRetornarListaDTO_quandoEncontrarCreditos() {
+  void buscarCreditosPorNfse_RetornarListaDTO_quandoEncontrarCreditos() {
     when(creditoRepository.findByNumeroNfse("7891011"))
         .thenReturn(Arrays.asList(credito1, credito2));
     when(creditoMapper.toDTO(credito1)).thenReturn(creditoDTO1);
@@ -86,14 +85,14 @@ class CreditoServiceTest {
   }
 
   @Test
-  void buscarCreditosPorNfse_deveLancarExcecao_quandoNaoEncontrarCreditos() {
+  void buscarCreditosPorNfse_LancarExcecao_quandoNaoEncontrarCreditos() {
     when(creditoRepository.findByNumeroNfse("0000000")).thenReturn(Collections.emptyList());
     assertThrows(ResourceNotFoundException.class,
         () -> creditoService.buscarCreditosPorNfse("0000000"));
   }
 
   @Test
-  void buscarCreditoPorNumero_deveRetornarDTO_quandoEncontrarCredito() {
+  void buscarCreditoPorNumero_RetornarDTO_quandoEncontrarCredito() {
     when(creditoRepository.findByNumeroCredito("654321")).thenReturn(Optional.of(credito3));
     when(creditoMapper.toDTO(credito3)).thenReturn(creditoDTO3);
     CreditoDTO result = creditoService.buscarCreditoPorNumero("654321");
@@ -104,7 +103,7 @@ class CreditoServiceTest {
   }
 
   @Test
-  void buscarCreditoPorNumero_deveLancarExcecao_quandoNaoEncontrarCredito() {
+  void buscarCreditoPorNumero_LancarExcecao_quandoNaoEncontrarCredito() {
     when(creditoRepository.findByNumeroCredito("999999")).thenReturn(Optional.empty());
     assertThrows(ResourceNotFoundException.class,
         () -> creditoService.buscarCreditoPorNumero("999999"));

@@ -53,6 +53,7 @@ services:
       KAFKA_RESTART_DELAY: "5"
       ZOOKEEPER_AUTOPURGE_PURGE_INTERVAL: "0"
 
+
   redpanda-console:
     platform: linux/amd64
     container_name: redpanda-console
@@ -107,15 +108,11 @@ services:
     ports:
       - "8050:8050"
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "curl -f http://localhost:8050/api/creditos/health || exit 1",
-        ]
+      test: ["CMD-SHELL", "curl -f http://localhost:8050/api/creditos/health || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 10
-      start_period: 180s
+      start_period: 120s
 
   frontend:
     build: front-creditos-fiscais

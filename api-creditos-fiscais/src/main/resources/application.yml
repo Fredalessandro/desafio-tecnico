@@ -11,9 +11,6 @@ spring:
       connection-timeout: 20000
       idle-timeout: 300000
       max-lifetime: 1200000
-      connection-test-query: SELECT 1
-      validation-timeout: 5000
-      leak-detection-threshold: 60000
 
   # Configuração JPA/Hibernate
   jpa:
@@ -29,8 +26,6 @@ spring:
           batch_size: 20
         order_inserts: true
         order_updates: true
-        connection:
-          provider_disables_autocommit: true
 
   # Configuração Flyway
   flyway:
@@ -77,11 +72,8 @@ logging:
     com.desafio: ${LOGGING_LEVEL_COM_DESAFIO:INFO}
     org.springframework.kafka: INFO
     org.apache.kafka: WARN
-    org.hibernate.SQL: INFO
+    org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
-    org.springframework.boot.autoconfigure: INFO
-    org.springframework.context.annotation: INFO
-    org.springframework.beans.factory: INFO
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
     file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"

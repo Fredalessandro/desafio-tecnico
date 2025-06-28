@@ -1,143 +1,312 @@
-# desafio-tecnico
+# 🏦 Sistema de Créditos Fiscais
 
-## 📦 Visão Geral
+Sistema completo para gestão de créditos fiscais com API REST em Spring Boot e frontend em Angular.
 
-Este projeto orquestra uma API Java Spring Boot, um frontend Angular, PostgreSQL, Kafka e Redpanda Console usando Docker Compose. Compatível com Windows, Linux e macOS (incluindo Apple Silicon/M1/M2).
+## 📋 Índice
 
-### Backend (API)
+- [Visão Geral](#visão-geral)
+- [Tecnologias](#tecnologias)
+- [Arquitetura](#arquitetura)
+- [Pré-requisitos](#pré-requisitos)
+- [Instalação](#instalação)
+- [Uso](#uso)
+- [API](#api)
+- [Estrutura do Projeto](#estrutura-do-projeto)
+- [Contribuição](#contribuição)
+- [Licença](#licença)
 
-- **Repositório:** [api-creditos-fiscais](https://github.com/Fredalessandro/api-creditos-fiscais)
-- **Tecnologia:** Java 17 + Spring Boot
-- **Diretório local:** `api-creditos-fiscais/`
+## 🎯 Visão Geral
+
+Sistema desenvolvido para gerenciar créditos fiscais, permitindo consultas por NFS-e e número do crédito. Inclui autenticação JWT, auditoria via Kafka e interface web responsiva.
+
+### Funcionalidades
+
+- ✅ Consulta de créditos por NFS-e
+- ✅ Consulta de crédito por número
+- ✅ Autenticação JWT
+- ✅ Cadastro de usuários
+- ✅ Auditoria via Kafka
+- ✅ Interface web responsiva
+- ✅ Documentação OpenAPI/Swagger
+
+## 🛠 Tecnologias
+
+### Backend
+
+- **Java 17**
+- **Spring Boot 3.3.12**
+- **Spring Security + JWT**
+- **Spring Data JPA**
+- **PostgreSQL 16**
+- **Flyway** (Migrações)
+- **Kafka** (Eventos)
+- **MapStruct** (Mapeamento)
+- **Lombok**
+- **Maven**
 
 ### Frontend
 
-- **Repositório:** [front-creditos-fiscais](https://github.com/Fredalessandro/front-creditos-fiscais)
-- **Tecnologia:** Angular + Node.js
-- **Diretório local:** `front-creditos-fiscais/`
+- **Angular 17**
+- **TypeScript**
+- **Tailwind CSS**
+- **RxJS**
 
-> **💡 Dica:** Para contribuir com melhorias específicas de cada componente, acesse diretamente os repositórios individuais dos submódulos.
+### Infraestrutura
 
----
+- **Docker & Docker Compose**
+- **PostgreSQL**
+- **Kafka**
+- **Redpanda Console**
 
-## 🐳 Subindo o ambiente com Docker Compose
+## 🏗 Arquitetura
 
-### Pré-requisitos
-
-- [Docker Desktop](https://www.docker.com/products/docker-desktop) (Windows/macOS)
-- [Docker Engine + Docker Compose](https://docs.docker.com/compose/install/) (Linux)
-- Git
-
-> **Atenção Mac M1/M2:**
-> O arquivo força a arquitetura `linux/amd64` para máxima compatibilidade. Caso note lentidão, ative a emulação (Rosetta/Colima) ou ajuste/remova a linha `platform: linux/amd64` nos serviços do docker-compose.
-
-### Clonando o repositório
-
-```sh
-git clone https://github.com/Fredalessandro/desafio-tecnico-alessandro.git
-cd desafio-tecnico-alessandro
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Frontend      │    │   API REST      │    │   PostgreSQL    │
+│   (Angular)     │◄──►│   (Spring Boot) │◄──►│   (Database)    │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+                              │
+                              ▼
+                       ┌─────────────────┐
+                       │   Kafka         │
+                       │   (Events)      │
+                       └─────────────────┘
 ```
 
-**Alternativa:** Se você já clonou sem submódulos, pode baixá-los depois com:
+## 📋 Pré-requisitos
 
-```sh
-git submodule update --init --recursive
-```
+- **Docker** (versão 20.10+)
+- **Docker Compose** (versão 2.0+)
+- **Java 17** (para desenvolvimento local)
+- **Node.js 18+** (para desenvolvimento local)
+- **Maven 3.8+** (para desenvolvimento local)
 
-### Subindo os containers
+## 🚀 Instalação
 
-```sh
-docker-compose up --build
-```
+### Opção 1: Docker (Recomendado)
 
-### Parando os containers
+1. **Clone o repositório**
 
-```sh
-docker-compose down
-```
+   ```bash
+   git clone <repository-url>
+   cd desafio-tecnico-alessandro
+   ```
 
----
+2. **Execute com Docker Compose**
 
-## 🔎 Serviços, Imagens e Portas
+   ```bash
+   docker-compose up -d
+   ```
 
-| Serviço              | Imagem/Base                              | Porta Host:Container | Descrição                       |
-| -------------------- | ---------------------------------------- | -------------------- | ------------------------------- |
-| **API**              | Builda local (Java 17, Spring Boot)      | 8050:8050            | Backend REST principal          |
-| **Frontend**         | Builda local (Node 20 + Nginx)           | 8080:80              | SPA Angular                     |
-| **PostgreSQL**       | postgres:16                              | 5432:5432            | Banco de dados                  |
-| **Kafka**            | obsidiandynamics/kafka                   | 9092:9092, 2181:2181 | Broker de eventos               |
-| **Redpanda Console** | docker.redpanda.com/redpandadata/console | 8081:8080            | UI para monitorar tópicos Kafka |
+3. **Aguarde a inicialização**
 
-### Credenciais Padrão
+   ```bash
+   # Verifique o status dos containers
+   docker-compose ps
 
-- **PostgreSQL**: usuário `postgres`, senha `postgres`
-- **Kafka**: sem autenticação
+   # Acompanhe os logs
+   docker-compose logs -f api
+   ```
 
----
+### Opção 2: Desenvolvimento Local
 
-## 🌐 Como acessar
+1. **Backend**
 
-- **Frontend:** [http://localhost:8080](http://localhost:8080)
-- **API:** [http://localhost:8050/api/creditos/health](http://localhost:8050/api/creditos/health)
-- **Redpanda Console:** [http://localhost:8081](http://localhost:8081)
-- **Kafka Broker:** `localhost:9092`
-- **PostgreSQL:** `localhost:5432` (pode conectar via DBeaver, TablePlus, etc)
-
----
-
-## ⚙️ Executando localmente (sem Docker)
-
-### Backend (API)
-
-1. Instale Java 17+ e Maven 3.6+
-2. Configure o banco PostgreSQL localmente (usuário/senha padrão: postgres)
-3. Copie `env.example` para `.env` e ajuste se necessário
-4. Execute:
-   ```sh
+   ```bash
+   cd api-creditos-fiscais
+   ./mvnw clean install
    ./mvnw spring-boot:run
-   # ou
-   mvn spring-boot:run
    ```
-5. API disponível em [http://localhost:8050](http://localhost:8050)
+
+2. **Frontend**
+   ```bash
+   cd front-creditos-fiscais
+   npm install
+   npm start
+   ```
+
+## 🌐 Uso
+
+### URLs de Acesso
+
+| Serviço              | URL                                       | Descrição        |
+| -------------------- | ----------------------------------------- | ---------------- |
+| **Frontend**         | http://localhost:8080                     | Interface web    |
+| **API**              | http://localhost:8050                     | API REST         |
+| **Swagger**          | http://localhost:8050/api/swagger-ui.html | Documentação API |
+| **Redpanda Console** | http://localhost:8081                     | Console Kafka    |
+| **PostgreSQL**       | localhost:5432                            | Banco de dados   |
+
+### Primeiro Acesso
+
+1. Acesse http://localhost:8080
+2. Faça o cadastro de um usuário
+3. Faça login com as credenciais
+4. Use o sistema para consultar créditos
+
+## 🔌 API
+
+### Endpoints Principais
+
+#### Autenticação
+
+```http
+POST /api/usuarios/login
+Content-Type: application/json
+
+{
+  "login": "usuario",
+  "senha": "senha123"
+}
+```
+
+#### Consulta de Créditos
+
+```http
+GET /api/creditos/{numeroNfse}
+Authorization: Bearer <token>
+
+GET /api/creditos/credito/{numeroCredito}
+Authorization: Bearer <token>
+```
+
+#### Health Check
+
+```http
+GET /api/creditos/health
+GET /api/creditos/status
+```
+
+### Documentação Completa
+
+Acesse http://localhost:8050/api/swagger-ui.html para documentação interativa.
+
+## 📁 Estrutura do Projeto
+
+```
+desafio-tecnico-alessandro/
+├── api-creditos-fiscais/          # Backend Spring Boot
+│   ├── src/main/java/
+│   │   └── com/desafio/credito/
+│   │       ├── config/            # Configurações
+│   │       ├── controller/        # Controllers REST
+│   │       ├── dto/              # Data Transfer Objects
+│   │       ├── entity/           # Entidades JPA
+│   │       ├── mapper/           # Mapeamentos MapStruct
+│   │       ├── repository/       # Repositórios JPA
+│   │       ├── service/          # Lógica de negócio
+│   │       └── exception/        # Tratamento de exceções
+│   └── src/main/resources/
+│       └── db/migration/         # Migrações Flyway
+├── front-creditos-fiscais/        # Frontend Angular
+│   ├── src/app/
+│   │   ├── auth/                 # Autenticação
+│   │   ├── credito/              # Módulo de créditos
+│   │   ├── guards/               # Guards de rota
+│   │   ├── interceptors/         # Interceptors HTTP
+│   │   ├── models/               # Modelos TypeScript
+│   │   └── services/             # Serviços Angular
+│   └── src/environments/         # Configurações de ambiente
+└── docker-compose.yml            # Orquestração Docker
+```
+
+## 🧪 Testes
+
+### Backend
+
+```bash
+cd api-creditos-fiscais
+./mvnw test
+```
 
 ### Frontend
 
-1. Instale Node.js 20+
-2. No diretório `front-creditos-fiscais`:
-   ```sh
-   npm install --legacy-peer-deps
-   npm start
-   # ou
-   ng serve
+```bash
+cd front-creditos-fiscais
+npm test
+```
+
+## 🔧 Comandos Úteis
+
+### Docker
+
+```bash
+# Iniciar todos os serviços
+docker-compose up -d
+
+# Parar todos os serviços
+docker-compose down
+
+# Ver logs
+docker-compose logs -f api
+
+# Rebuild da API
+docker-compose build api
+
+# Acessar container
+docker-compose exec api sh
+```
+
+### Desenvolvimento
+
+```bash
+# Testar conexão
+./test-connection.sh
+
+# Limpar volumes (cuidado!)
+docker-compose down -v
+
+# Verificar saúde dos serviços
+docker-compose ps
+```
+
+## 🐛 Troubleshooting
+
+### Problemas Comuns
+
+1. **API não conecta ao PostgreSQL**
+
+   ```bash
+   # Verifique se o PostgreSQL está saudável
+   docker-compose ps postgres
+
+   # Verifique logs da API
+   docker-compose logs api
    ```
-3. Frontend disponível em [http://localhost:4200](http://localhost:4200)
+
+2. **Erro de migração Flyway**
+
+   ```bash
+   # Rebuild da API
+   docker-compose build api
+   docker-compose up -d api
+   ```
+
+3. **Frontend não carrega**
+   ```bash
+   # Verifique se a API está rodando
+   curl http://localhost:8050/api/creditos/health
+   ```
+
+## 🤝 Contribuição
+
+1. Fork o projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
+3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+4. Push para a branch (`git push origin feature/AmazingFeature`)
+5. Abra um Pull Request
+
+## 📄 Licença
+
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+
+## 📞 Suporte
+
+Para dúvidas ou problemas:
+
+- Abra uma [Issue](../../issues)
+- Entre em contato: [seu-email@exemplo.com]
 
 ---
 
-## 📝 Dicas de Compatibilidade
-
-- **Windows:** Use Docker Desktop e Git Bash/PowerShell para comandos.
-- **Linux:** Docker Compose pode exigir `sudo`.
-- **macOS M1/M2:** Se notar lentidão, ative Rosetta/Colima ou remova `platform: linux/amd64` dos serviços.
-
----
-
-## 🛠️ Informações do Git
-
-- Clone: `git clone --recurse-submodules https://github.com/Fredalessandro/desafio-tecnico-alessandro.git`
-- **Submódulos:** Este projeto contém submódulos que referenciam repositórios separados para API e Frontend
-- Recomenda-se criar branches para novas features/fixes.
-- Faça commits frequentes e mensagens claras.
-- Para contribuir, abra um Pull Request.
-
----
-
-## 📚 Referências
-
-- [Documentação oficial Docker Compose](https://docs.docker.com/compose/)
-- [Documentação Spring Boot](https://spring.io/projects/spring-boot)
-- [Documentação Angular](https://angular.io/)
-
----
-
-**Dúvidas?** Abra uma issue ou envie um e-mail para o responsável pelo repositório.
+**Desenvolvido com ❤️ por [Seu Nome]**

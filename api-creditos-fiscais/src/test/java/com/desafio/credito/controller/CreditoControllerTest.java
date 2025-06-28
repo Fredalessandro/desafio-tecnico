@@ -1,6 +1,7 @@
 package com.desafio.credito.controller;
 
 import com.desafio.credito.dto.CreditoDTO;
+import com.desafio.credito.service.CreditoEventPublisher;
 import com.desafio.credito.exception.ResourceNotFoundException;
 import com.desafio.credito.service.CreditoService;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,6 +11,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 
+import jakarta.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -19,16 +22,20 @@ class CreditoControllerTest {
 
   @Mock
   private CreditoService creditoService;
+  @Mock
+  private CreditoEventPublisher eventPublisher;
   @InjectMocks
   private CreditoController creditoController;
 
   private CreditoDTO creditoDTO1;
   private CreditoDTO creditoDTO2;
   private CreditoDTO creditoDTO3;
+  private HttpServletRequest request;
 
   @BeforeEach
   void setUp() {
     MockitoAnnotations.openMocks(this);
+    request = mock(HttpServletRequest.class);
 
     creditoDTO1 = CreditoDTO.builder().numeroCredito("123456").numeroNfse("7891011")
         .dataConstituicao(java.time.LocalDate.parse("2024-02-25"))
@@ -53,8 +60,9 @@ class CreditoControllerTest {
   @Test
   void buscarCreditosPorNfse_deveRetornarOk_quandoNumeroValido() {
     when(creditoService.buscarCreditosPorNfse("7891011"))
-        .thenReturn(java.util.Arrays.asList(creditoDTO1, creditoDTO2));
-    ResponseEntity<List<CreditoDTO>> response = creditoController.buscarCreditosPorNfse("7891011");
+        .thenReturn(Arrays.asList(creditoDTO1, creditoDTO2));
+    ResponseEntity<List<CreditoDTO>> response =
+        creditoController.buscarCreditosPorNfse("7891011", request);
     assertEquals(200, response.getStatusCodeValue());
     assertEquals(2, response.getBody().size());
     assertEquals("123456", response.getBody().get(0).getNumeroCredito());
@@ -64,7 +72,7 @@ class CreditoControllerTest {
   @Test
   void buscarCreditosPorNfse_deveLancarExcecao_quandoNumeroVazio() {
     assertThrows(IllegalArgumentException.class,
-        () -> creditoController.buscarCreditosPorNfse(" "));
+        () -> creditoController.buscarCreditosPorNfse(" ", request));
   }
 
   @Test
@@ -72,13 +80,14 @@ class CreditoControllerTest {
     when(creditoService.buscarCreditosPorNfse("NFSE-404"))
         .thenThrow(new ResourceNotFoundException("not found"));
     assertThrows(ResourceNotFoundException.class,
-        () -> creditoController.buscarCreditosPorNfse("NFSE-404"));
+        () -> creditoController.buscarCreditosPorNfse("NFSE-404", request));
   }
 
   @Test
   void buscarCreditoPorNumero_deveRetornarOk_quandoNumeroValido() {
     when(creditoService.buscarCreditoPorNumero("654321")).thenReturn(creditoDTO3);
-    ResponseEntity<CreditoDTO> response = creditoController.buscarCreditoPorNumero("654321");
+    ResponseEntity<CreditoDTO> response =
+        creditoController.buscarCreditoPorNumero("654321", request);
     assertEquals(200, response.getStatusCodeValue());
     assertEquals("654321", response.getBody().getNumeroCredito());
     assertEquals("1122334", response.getBody().getNumeroNfse());
@@ -90,7 +99,7 @@ class CreditoControllerTest {
     when(creditoService.buscarCreditoPorNumero("999"))
         .thenThrow(new ResourceNotFoundException("not found"));
     assertThrows(ResourceNotFoundException.class,
-        () -> creditoController.buscarCreditoPorNumero("999"));
+        () -> creditoController.buscarCreditoPorNumero("999", request));
   }
 
   @Test

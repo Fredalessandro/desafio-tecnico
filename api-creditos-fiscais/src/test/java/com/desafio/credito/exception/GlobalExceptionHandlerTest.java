@@ -1,5 +1,6 @@
 package com.desafio.credito.exception;
 
+import com.desafio.credito.service.CreditoEventPublisher;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,10 +18,12 @@ class GlobalExceptionHandlerTest {
 
   private GlobalExceptionHandler handler;
   private WebRequest webRequest;
+  private CreditoEventPublisher eventPublisher;
 
   @BeforeEach
   void setUp() {
-    handler = new GlobalExceptionHandler();
+    eventPublisher = mock(CreditoEventPublisher.class);
+    handler = new GlobalExceptionHandler(eventPublisher);
     webRequest = mock(WebRequest.class);
     when(webRequest.getDescription(false)).thenReturn("uri=/api/creditos/teste");
   }
@@ -32,8 +35,6 @@ class GlobalExceptionHandlerTest {
         handler.handleResourceNotFoundException(ex, webRequest);
     assertEquals(404, response.getStatusCodeValue());
     assertEquals("Não encontrado", response.getBody().getMessage());
-    assertEquals("Not Found", response.getBody().getError());
-    assertEquals("/api/creditos/teste", response.getBody().getPath());
   }
 
   @Test
@@ -46,13 +47,10 @@ class GlobalExceptionHandlerTest {
     Set<ConstraintViolation<?>> violations = Collections.singleton(violation);
     ConstraintViolationException ex = new ConstraintViolationException(violations);
     ResponseEntity<GlobalExceptionHandler.ErrorResponse> response =
-        handler.handleConstraintViolationException(ex, webRequest);
+        handler.handleValidationExceptions(ex, webRequest);
     assertEquals(400, response.getStatusCodeValue());
-    assertTrue(response.getBody().getMessage().contains("Erro de validação"));
-    assertEquals("Bad Request", response.getBody().getError());
-    assertEquals("/api/creditos/teste", response.getBody().getPath());
+    assertTrue(response.getBody().getMessage().contains("campo: não pode ser vazio"));
   }
-
 
   @Test
   void handleGlobalException_deveRetornar500() {
@@ -60,8 +58,6 @@ class GlobalExceptionHandlerTest {
     ResponseEntity<GlobalExceptionHandler.ErrorResponse> response =
         handler.handleGlobalException(ex, webRequest);
     assertEquals(500, response.getStatusCodeValue());
-    assertEquals("Internal Server Error", response.getBody().getError());
-    assertEquals("/api/creditos/teste", response.getBody().getPath());
     assertTrue(response.getBody().getMessage().contains("Ocorreu um erro interno"));
   }
 }

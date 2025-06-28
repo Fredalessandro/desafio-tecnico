@@ -15,38 +15,25 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CreditoService {
 
+  private final CreditoMapper creditoMapper;
+  private final CreditoRepository creditoRepository;
 
-    private final CreditoMapper creditoMapper;
+  public List<CreditoDTO> buscarCreditosPorNfse(String numeroNfse) {
+    List<Credito> creditos = creditoRepository.findByNumeroNfse(numeroNfse);
 
-    private final CreditoRepository creditoRepository;
-
-    /**
-     * Busca créditos por número da NFS-e
-     */
-    public List<CreditoDTO> buscarCreditosPorNfse(String numeroNfse) {
-        List<Credito> creditos = creditoRepository.findByNumeroNfse(numeroNfse);
-
-        if (creditos.isEmpty()) {
-            throw new ResourceNotFoundException("Nenhum crédito encontrado para a NFS-e: " + numeroNfse);
-        }
-
-        return creditos.stream().map(creditoMapper::toDTO).collect(Collectors.toList());
+    if (creditos.isEmpty()) {
+      throw new ResourceNotFoundException("Nenhum crédito encontrado para a NFS-e: " + numeroNfse);
     }
 
-    /**
-     * Busca um crédito específico por número do crédito
-     */
-    public CreditoDTO buscarCreditoPorNumero(String numeroCredito) {
-        return creditoRepository.findByNumeroCredito(numeroCredito)
-                .map(creditoMapper::toDTO).orElseThrow(() -> new ResourceNotFoundException("Crédito não encontrado com o número: " + numeroCredito));
-    }
+    return creditos.stream()
+            .map(creditoMapper::toDTO)
+            .collect(Collectors.toList());
+  }
 
-
-    /**
-     * Converte Entity para DTO
-     */
-    private CreditoDTO converterParaDTO(Credito credito) {
-        return creditoMapper.toDTO(credito);
-    }
+  public CreditoDTO buscarCreditoPorNumero(String numeroCredito) {
+    return creditoRepository.findByNumeroCredito(numeroCredito).map(creditoMapper::toDTO)
+        .orElseThrow(() -> new ResourceNotFoundException(
+            "Crédito não encontrado com o número: " + numeroCredito));
+  }
 
 }
