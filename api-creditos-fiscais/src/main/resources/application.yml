@@ -59,8 +59,8 @@ spring:
 # Configuração do Servidor
 server:
   port: ${SERVER_PORT:8050}
-  servlet:
-    context-path: /api
+  #servlet:
+    #context-path: /api
   error:
     include-message: always
     include-binding-errors: always
@@ -82,3 +82,14 @@ logging:
 app:
   name: "API Créditos Fiscais"
   version: "1.0.0"
+
+# Configuração do Swagger/OpenAPI
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    config-url: /v3/api-docs/swagger-config
+    url: /v3/api-docs

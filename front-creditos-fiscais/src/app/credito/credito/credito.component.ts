@@ -1,9 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Usuario } from '../../models/usuario.model';
+import { Credito } from '../../models/credito.model';
 import { AuthService } from '../../services/auth.service';
+import { FormatterService } from '../../services/formatter.service';
 import { CreditoService } from '../credito.service';
 
 @Component({
@@ -15,8 +17,8 @@ import { CreditoService } from '../credito.service';
 })
 export class CreditoComponent implements OnInit {
   filtroTipo = new FormControl<'nfe' | 'credito'>('nfe');
-  valorFiltro = new FormControl('');
-  creditos: any[] = [];
+  valorFiltro = new FormControl('', [Validators.required, Validators.pattern(/^\d+$/)]);
+  creditos: Credito[] = [];
   loading = false;
   erro: string | null = null;
   usuario: Usuario | null = null;
@@ -24,6 +26,7 @@ export class CreditoComponent implements OnInit {
   constructor(
     private creditoService: CreditoService,
     private authService: AuthService,
+    private formatterService: FormatterService,
     private router: Router
   ) {}
 
@@ -35,10 +38,17 @@ export class CreditoComponent implements OnInit {
     this.erro = null;
     this.creditos = [];
     const valor = this.valorFiltro.value;
+
     if (!valor) {
       this.erro = 'Informe o número da NFe ou do Crédito.';
       return;
     }
+
+    if (!this.formatterService.validarApenasNumeros(valor)) {
+      this.erro = 'Digite apenas números no campo de pesquisa.';
+      return;
+    }
+
     this.loading = true;
     if (this.filtroTipo.value === 'nfe') {
       this.creditoService.buscarPorNfe(valor).subscribe({
@@ -65,6 +75,27 @@ export class CreditoComponent implements OnInit {
         }
       });
     }
+  }
+
+  // Métodos de formatação
+  formatarData(data: string): string {
+    return this.formatterService.formatarData(data);
+  }
+
+  formatarMoeda(valor: number): string {
+    return this.formatterService.formatarMoeda(valor);
+  }
+
+  formatarAliquota(aliquota: number): string {
+    return this.formatterService.formatarAliquota(aliquota);
+  }
+
+  formatarSimplesNacional(simplesNacional: boolean): string {
+    return this.formatterService.formatarSimplesNacional(simplesNacional);
+  }
+
+  formatarTipoCredito(tipoCredito: string): string {
+    return this.formatterService.formatarTipoCredito(tipoCredito);
   }
 
   logout(): void {

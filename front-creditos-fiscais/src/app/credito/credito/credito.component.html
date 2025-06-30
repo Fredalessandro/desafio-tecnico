@@ -18,8 +18,23 @@
     <option value="nfe">Por NFes</option>
     <option value="credito">Por Crédito</option>
   </select>
-  <input type="text" [formControl]="valorFiltro" placeholder="Digite o número" class="border border-gray-300 p-2 rounded w-full md:w-64" />
-  <button (click)="buscar()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-800" [disabled]="loading">
+  <div class="flex flex-col w-full md:w-64">
+    <input
+      type="text"
+      [formControl]="valorFiltro"
+      placeholder="Digite apenas números"
+      class="border border-gray-300 p-2 rounded"
+      [class.border-red-500]="valorFiltro.invalid && valorFiltro.touched"
+    />
+    <small *ngIf="valorFiltro.invalid && valorFiltro.touched" class="text-red-500 text-xs mt-1">
+      Digite apenas números
+    </small>
+  </div>
+  <button
+    (click)="buscar()"
+    class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-800 disabled:bg-gray-400"
+    [disabled]="loading || valorFiltro.invalid"
+  >
     Buscar
   </button>
 </div>
@@ -36,14 +51,14 @@
     <div class="p-4">
       <h2 class="text-lg font-semibold mb-2">Crédito Nº: {{ credito.numeroCredito }}</h2>
       <p><strong>NFS-e:</strong> {{ credito.numeroNfse }}</p>
-      <p><strong>Data Constituição:</strong> {{ credito.dataConstituicao }}</p>
-      <p><strong>Valor ISSQN:</strong> {{ credito.valorIssqn }}</p>
-      <p><strong>Tipo Crédito:</strong> {{ credito.tipoCredito }}</p>
-      <p><strong>Simples Nacional:</strong> {{ credito.simplesNacional }}</p>
-      <p><strong>Alíquota:</strong> {{ credito.aliquota }}</p>
-      <p><strong>Valor Faturado:</strong> {{ credito.valorFaturado }}</p>
-      <p><strong>Valor Dedução:</strong> {{ credito.valorDeducao }}</p>
-      <p><strong>Base de Cálculo:</strong> {{ credito.baseCalculo }}</p>
+      <p><strong>Data Constituição:</strong> {{ formatarData(credito.dataConstituicao) }}</p>
+      <p><strong>Valor ISSQN:</strong> {{ formatarMoeda(credito.valorIssqn) }}</p>
+      <p><strong>Tipo Crédito:</strong> {{ formatarTipoCredito(credito.tipoCredito) }}</p>
+      <p><strong>Simples Nacional:</strong> {{ formatarSimplesNacional(credito.simplesNacional) }}</p>
+      <p><strong>Alíquota:</strong> {{ formatarAliquota(credito.aliquota) }}</p>
+      <p><strong>Valor Faturado:</strong> {{ formatarMoeda(credito.valorFaturado) }}</p>
+      <p><strong>Valor Dedução:</strong> {{ formatarMoeda(credito.valorDeducao) }}</p>
+      <p><strong>Base de Cálculo:</strong> {{ formatarMoeda(credito.baseCalculo) }}</p>
     </div>
   </div>
 </div>
