@@ -45,7 +45,7 @@ docker-compose ps
 | ----------------- | ----------------------------------------- | ------------- |
 | **Frontend**      | http://localhost:8080                     | Interface web |
 | **API**           | http://localhost:8050                     | API REST      |
-| **Swagger**       | http://localhost:8050/api/swagger-ui.html | Documentação  |
+| **Swagger**       | http://localhost:8050/swagger-ui.html     | Documentação  |
 | **Kafka Console** | http://localhost:8081                     | Console Kafka |
 
 ## 🔧 Comandos Úteis
