@@ -98,5 +98,3 @@ npm test
 ```
 
 ---
-
-**Desenvolvido com ❤️**
